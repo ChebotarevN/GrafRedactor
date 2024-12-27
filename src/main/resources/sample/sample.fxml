@@ -27,6 +27,11 @@
                   <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                </FlowPane.margin>
             </Button>
+            <Button fx:id="circleButton" mnemonicParsing="false" onAction="#setCircle" text="Окружность">
+               <FlowPane.margin>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </FlowPane.margin>
+            </Button>
             <Button fx:id="lineToggle" mnemonicParsing="false" onAction="#setLine" text="Линия" />
             <Button mnemonicParsing="false" onAction="#setEraser" text="Ластик">
                <FlowPane.margin>

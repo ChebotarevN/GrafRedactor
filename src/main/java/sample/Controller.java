@@ -169,6 +169,57 @@ public class Controller {
         }
         gc.strokePolygon(xPoints, yPoints, 5);
     }
+    public void setCircle() {
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+        canvas.setOnMousePressed(this::startCircle);
+        canvas.setOnMouseDragged(event -> dragCircle(event, gc));
+        canvas.setOnMouseReleased(event -> releaseCircle(event, gc));
+    }
+
+    private void startCircle(MouseEvent event) {
+        startX = event.getX();
+        startY = event.getY();
+        snapshot = canvas.snapshot(null, null);
+    }
+
+    private void dragCircle(MouseEvent event, GraphicsContext gc) {
+        endX = event.getX();
+        endY = event.getY();
+        gc.clearRect(0, 0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight());
+        gc.drawImage(snapshot, 0, 0);
+        drawCircle(gc, startX, startY, endX, endY);
+    }
+
+    private void releaseCircle(MouseEvent event, GraphicsContext gc) {
+        endX = event.getX();
+        endY = event.getY();
+        gc.clearRect(0, 0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight());
+        gc.drawImage(snapshot, 0, 0);
+        drawCircle(gc, startX, startY, endX, endY);
+    }
+
+    private void drawCircle(GraphicsContext gc, double startX, double startY, double endX, double endY) {
+        // Центр окружности
+        double centerX = (startX + endX) / 2;
+        double centerY = (startY + endY) / 2;
+
+        // Радиусы по осям X и Y
+        double radiusX = Math.abs(endX - startX) / 2;
+        double radiusY = Math.abs(endY - startY) / 2;
+
+        // Рисуем овал
+        gc.setStroke(colorPickerStroke.getValue());
+        gc.setLineWidth(sliderSetSize.getValue());
+        gc.setFill(colorPickerFill.getValue());
+
+        boolean fill = fillCheckBox.isSelected();
+        if (fill) {
+            gc.fillOval(centerX - radiusX, centerY - radiusY, 2 * radiusX, 2 * radiusY);
+        }
+        gc.strokeOval(centerX - radiusX, centerY - radiusY, 2 * radiusX, 2 * radiusY);
+    }
+
+
 
 
     public void open(ActionEvent actionEvent) {
