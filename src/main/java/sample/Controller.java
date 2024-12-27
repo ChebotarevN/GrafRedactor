@@ -254,5 +254,64 @@ public class Controller {
     public void toggleLine(ActionEvent event) {
         isDrawingLine = lineToggle.isSelected();
     }
+
+    // Прямоугольный треугольник
+    public void setRightTriangle() {
+        canvas.setOnMousePressed(this::startRightTriangle);
+        canvas.setOnMouseDragged(this::dragRightTriangle);
+        canvas.setOnMouseReleased(this::releaseRightTriangle);
+    }
+
+    private void startRightTriangle(MouseEvent event) {
+        startX = event.getX();
+        startY = event.getY();
+        snapshot = canvas.snapshot(null, null);  // сохраняем текущий холст
+    }
+
+    private void dragRightTriangle(MouseEvent event) {
+        endX = event.getX();
+        endY = event.getY();
+
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        gc.drawImage(snapshot, 0, 0);
+
+        drawRightTriangle(gc, startX, startY, endX, endY);
+    }
+
+    private void releaseRightTriangle(MouseEvent event) {
+        endX = event.getX();
+        endY = event.getY();
+
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        gc.drawImage(snapshot, 0, 0);
+
+        drawRightTriangle(gc, startX, startY, endX, endY);
+    }
+
+    private void drawRightTriangle(GraphicsContext gc, double startX, double startY, double endX, double endY) {
+        // Вершины прямоугольного треугольника
+        double[] xPoints = { startX, endX, startX };
+        double[] yPoints = { startY, endY, endY };
+
+        gc.setStroke(colorPickerStroke.getValue());
+        gc.setLineWidth(sliderSetSize.getValue());
+        gc.setFill(colorPickerFill.getValue());
+
+        boolean fill = fillCheckBox.isSelected();
+        if (fill) {
+            gc.fillPolygon(xPoints, yPoints, 3);
+        }
+        gc.strokePolygon(xPoints, yPoints, 3);
+    }
+
+    // Обработчик нажатия кнопки:
+    @FXML
+    public void setRightTriangle(ActionEvent event) {
+        canvas.setOnMousePressed(this::startRightTriangle);
+        canvas.setOnMouseDragged(this::dragRightTriangle);
+        canvas.setOnMouseReleased(this::releaseRightTriangle);
+    }
 }
 
