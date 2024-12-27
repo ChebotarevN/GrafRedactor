@@ -114,6 +114,7 @@ public class Controller {
         gc.fillOval(startX, startY, sliderSetSize.getValue(), sliderSetSize.getValue());
     }
 
+
     //Пятиугольник
     public void setPentagon() {
         GraphicsContext gc = canvas.getGraphicsContext2D();
@@ -169,7 +170,46 @@ public class Controller {
         }
         gc.strokePolygon(xPoints, yPoints, 5);
     }
-
+    //прямоугольник
+    public void setRectangle() {
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+        canvas.setOnMousePressed(this::startRectangle);
+        canvas.setOnMouseDragged(event -> dragRectangle(event, gc));
+        canvas.setOnMouseReleased(event -> releaseRectangle(event, gc));
+    }
+    private void startRectangle(MouseEvent event) {
+        startX = event.getX();
+        startY = event.getY();
+        snapshot = canvas.snapshot(null, null);
+    }
+    private void dragRectangle(MouseEvent event, GraphicsContext gc) {
+        endX = event.getX();
+        endY = event.getY();
+        gc.clearRect(0, 0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight());
+        gc.drawImage(snapshot, 0, 0);
+        drawRectangle(gc, startX, startY, endX, endY);
+    }
+    private void releaseRectangle(MouseEvent event, GraphicsContext gc) {
+        endX = event.getX();
+        endY = event.getY();
+        gc.clearRect(0, 0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight());
+        gc.drawImage(snapshot, 0, 0);
+        drawRectangle(gc, startX, startY, endX, endY);
+    }
+    private void drawRectangle(GraphicsContext gc, double startX, double startY, double endX, double endY) {
+        double x = Math.min(startX, endX);
+        double y = Math.min(startY, endY);
+        double width = Math.abs(endX - startX);
+        double height = Math.abs(endY - startY);
+        gc.setStroke(colorPickerStroke.getValue());
+        gc.setLineWidth(sliderSetSize.getValue());
+        gc.setFill(colorPickerFill.getValue());
+        boolean fill = fillCheckBox.isSelected();
+        if (fill) {
+            gc.fillRect(x, y, width, height);
+        }
+        gc.strokeRect(x, y, width, height);
+    }
 
     public void open(ActionEvent actionEvent) {
         GraphicsContext gc = canvas.getGraphicsContext2D();
