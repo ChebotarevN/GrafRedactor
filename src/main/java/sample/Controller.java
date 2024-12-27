@@ -26,6 +26,8 @@ public class Controller {
     @FXML
     private Button lineToggle;
     @FXML
+    private Button circleToggle;
+    @FXML
     Canvas canvas;
     Model model;
     Points points;
@@ -45,6 +47,7 @@ public class Controller {
         initSliderWidth();
         initFillCheckBox();
         colorPickerStroke.setValue(Color.BLACK);
+        circleToggle.setOnAction(event -> setCircle());
     }
 
     public void initSliderWidth() {
@@ -61,6 +64,51 @@ public class Controller {
     public void initFillCheckBox() {
         fillCheckBox.setSelected(false);
         fillCheckBox.setText("Заливка");
+    }
+
+    public void setCircle() {
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+        canvas.setOnMousePressed(this::startCircle);
+        canvas.setOnMouseDragged(event -> dragCircle(event, gc));
+        canvas.setOnMouseReleased(event -> releaseCircle(event, gc));
+    }
+
+    private void startCircle(MouseEvent event) {
+        startX = event.getX();
+        startY = event.getY();
+        snapshot = canvas.snapshot(null, null);
+    }
+
+    private void dragCircle(MouseEvent event, GraphicsContext gc) {
+        endX = event.getX();
+        endY = event.getY();
+        gc.clearRect(0, 0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight());
+        gc.drawImage(snapshot, 0, 0);
+        drawCircle(gc, startX, startY, endX, endY);
+    }
+
+    private void releaseCircle(MouseEvent event, GraphicsContext gc) {
+        endX = event.getX();
+        endY = event.getY();
+        gc.clearRect(0, 0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight());
+        gc.drawImage(snapshot, 0, 0);
+        drawCircle(gc, startX, startY, endX, endY); // Завершаем рисование окружности
+    }
+
+    private void drawCircle(GraphicsContext gc, double startX, double startY, double endX, double endY) {
+        double centerX = (startX + endX) / 2;
+        double centerY = (startY + endY) / 2;
+        double radius = Math.max(Math.abs(endX - startX), Math.abs(endY - startY)) / 2;
+
+        gc.setStroke(colorPickerStroke.getValue());
+        gc.setLineWidth(sliderSetSize.getValue());
+        gc.setFill(colorPickerFill.getValue());
+
+        boolean fill = fillCheckBox.isSelected();
+        if (fill) {
+            gc.fillOval(centerX - radius, centerY - radius, 2 * radius, 2 * radius); // Заливка
+        }
+        gc.strokeOval(centerX - radius, centerY - radius, 2 * radius, 2 * radius); // Контур
     }
 
     private void releaseEmpty(MouseEvent event) {
